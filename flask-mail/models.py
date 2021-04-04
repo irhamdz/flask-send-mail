@@ -13,10 +13,5 @@ class EventEmail(config.db.Model):
 
 class EventEmailSchema(config.ma.Schema):
     class Meta:
-        fields = ('event_id', 'email_subject', 'email_content', 'timestamp', 'is_active')
+        fields = ('id', 'event_id', 'email_subject', 'email_content', 'timestamp', 'is_active')
         model = EventEmail
-
-    # event_id = config.ma.auto_field()
-    # email_subject = config.ma.auto_field()
-    # email_content = config.ma.auto_field()
-    # timestamp = config.ma.auto_field()

@@ -1,34 +1,13 @@
 from datetime import datetime
 
 from flask_restful import Resource
-from flask import abort, request
+from flask import request
 
 from . import models, config
 
 
-def get_timestamp():
-    return datetime.now().strftime(("%Y-%m-%d %H:%M:%S"))
-
-
 def construct_timestamp(param: str):
     return datetime.strptime(param, "%Y-%m-%d %H:%M:%S")
-
-
-EVENT_EMAIl = {
-    1: {
-        "event_id": 1,
-        "email_subject": "Future AI Event",
-        "email_content": "Lorem ipsum dolor sir amet praesent sapien massa, convallis a pellentesque nec",
-        "timestamp": get_timestamp()
-    },
-    2: {
-        "event_id": 2,
-        "email_subject": "Jakarta Fair Event",
-        "email_content": "Lorem ipsum dolor sir amet praesent sapien massa, convallis a pellentesque nec",
-        "timestamp": get_timestamp()
-    },
-
-}
 
 
 class EventEmailListResource(Resource):
@@ -42,10 +21,12 @@ class EventEmailListResource(Resource):
 
         return event_email_schema.dump(event_email)
 
+
+class EventEmailCreateResource(Resource):
     def post(self):
         """
-        func to response a request POST /api/event_emails
-        :return: 201 created
+        func to response a request POST /api/save_emails
+        :return: detail created event email, 201 created
         """
 
         new_event_email = models.EventEmail(
@@ -61,33 +42,41 @@ class EventEmailListResource(Resource):
 
 
 class EventEmailResource(Resource):
-    def get(self, event_id):
+    def get(self, id):
         """
-        func to response to a request GET /api/event_emails/{event_id}
+        func to response to a request GET /api/event_emails/{id}
         :return: detail of event email given id, 200 OK, or 404 NOT FOUND
         """
+        event_email = models.EventEmail.query.get_or_404(id, description=f"Event email with id {id} not found")
+        event_email_schema = models.EventEmailSchema()
+        return event_email_schema.dump(event_email)
 
-        event_email = models.EventEmail.query.filter(models.EventEmail.event_id == event_id).one_or_none()
+    def patch(self, id):
+        """
+        func to response to a request PATCH /api/event_emails/{id}
+        :return: detail of event email given id, 200 OK, or 404 NOT FOUND
+        """
+        event_email = models.EventEmail.query.get_or_404(id, description=f"Event email with id {id} not found")
+        event_email_schema = models.EventEmailSchema()
 
-        if event_email is not None:
-            event_email_schema = models.EventEmailSchema()
-            return event_email_schema.dump(event_email)
-        else:
-            abort(404, f"Event email with event id {event_id} not found")
+        if 'event_id' in request.json:
+            event_email.event_id = request.json['event_id']
+        if 'email_subject' in request.json:
+            event_email.email_subject = request.json['email_subject']
+        if 'email_content' in request.json:
+            event_email.email_content = request.json['email_content']
+        if 'timestamp' in request.json:
+            event_email.timestamp = construct_timestamp(request.json['timestamp'])
 
-    # def patch(self, post_id):
-    #     post = Post.query.get_or_404(post_id)
-    #
-    #     if 'title' in request.json:
-    #         post.title = request.json['title']
-    #     if 'content' in request.json:
-    #         post.content = request.json['content']
-    #
-    #     db.session.commit()
-    #     return post_schema.dump(post)
-    #
-    # def delete(self, post_id):
-    #     post = Post.query.get_or_404(post_id)
-    #     db.session.delete(post)
-    #     db.session.commit()
-    #     return '', 204
+        config.db.session.commit()
+        return event_email_schema.dump(event_email)
+
+    def delete(self, id):
+        """
+        func to response to a request DELETE /api/event_emails/{id}
+        :return: 204 No Content
+        """
+        event_email = models.EventEmail.query.get_or_404(id)
+        config.db.session.delete(event_email)
+        config.db.session.commit()
+        return '', 204

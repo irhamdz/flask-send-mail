@@ -15,7 +15,8 @@ def create_app():
         return render_template('home.html')
 
     config.api.add_resource(event_email.EventEmailListResource, f'{config.api_dir}/event_emails')
-    config.api.add_resource(event_email.EventEmailResource, f'{config.api_dir}/event_emails/<int:event_id>')
+    config.api.add_resource(event_email.EventEmailCreateResource, f'{config.api_dir}/save_emails')
+    config.api.add_resource(event_email.EventEmailResource, f'{config.api_dir}/event_emails/<int:id>')
 
     # add command
     app.cli.add_command(init_database.init_db_command)

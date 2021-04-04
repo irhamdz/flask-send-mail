@@ -4,28 +4,44 @@ Web app for sending mail based on timestamp given build with flask
 ## Development
 - create and activate new Python virtual environment
 
-``python3 -m venv env``
+```bash
+python3 -m venv env
+```
 
-``source env/bin/activate``
+```bash
+source env/bin/activate
+```
 
 - install dependencies
 
-``pip install -r requirements.txt``
+```bash
+pip install -r requirements.txt
+```
 
 - set env variables for local machine
 
-``export FLASK_APP=flask-mail/app``
+```bash
+export FLASK_APP=flask-mail/app
+```
 
-``export FLASK_ENV=development``
+```bash
+export FLASK_ENV=development
+```
 
 - initialize database
 
-``flask init-db``
+```bash
+flask init-db
+```
 
 - run app
 
-``flask run``
+```bash
+flask run
+```
 
 - testing
 
-``pytest``
+```bash
+pytest
+```
