@@ -2,6 +2,12 @@
 Web app for sending mail based on timestamp given build with flask
 
 ## Development
+### create and activate new Python virtual environment
+
+``python3 -m venv env``
+
+``source env/bin/activate``
+
 ### install dependencies
 ``pip install -r requirements.txt``
 
