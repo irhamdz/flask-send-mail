@@ -130,3 +130,6 @@ dmypy.json
 
 #others
 .idea
+
+# db
+*.db
