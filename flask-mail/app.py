@@ -2,7 +2,7 @@ from flask import render_template
 
 
 def create_app():
-    from . import event_email, config, init_database
+    from . import (event_email, config, init_database, recipient)
 
     app = config.app
 
@@ -17,6 +17,7 @@ def create_app():
     config.api.add_resource(event_email.EventEmailListResource, f'{config.api_dir}/event_emails')
     config.api.add_resource(event_email.EventEmailCreateResource, f'{config.api_dir}/save_emails')
     config.api.add_resource(event_email.EventEmailResource, f'{config.api_dir}/event_emails/<int:id>')
+    config.api.add_resource(recipient.RecipientListResource, f'{config.api_dir}/recipients')
 
     # add command
     app.cli.add_command(init_database.init_db_command)
