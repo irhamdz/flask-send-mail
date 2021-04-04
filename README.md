@@ -6,7 +6,7 @@ Web app for sending mail based on timestamp given build with flask
 ``pip install -r requirements.txt``
 
 ### set env variables for local machine
-``export FLASK_APP=flask/app``
+``export FLASK_APP=flask-mail/app``
 
 ``export FLASK_ENV=development``
 
