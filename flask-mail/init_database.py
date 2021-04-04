@@ -8,7 +8,7 @@ from . import models, config
 
 
 def init_db():
-    DATA = [
+    EVENT_EMAIL_DATA = [
         {
             "event_id": 1,
             "email_subject": "Future AI Event",
@@ -31,16 +31,20 @@ def init_db():
     config.db.create_all()
 
     # Populate db
-    for item in DATA:
-        data = models.EventEmail(
+    recipient = models.Recipient(name="Irham Dzuhri", email="irhamdz@gmail.com")
+    config.db.session.add(recipient)
+    for item in EVENT_EMAIL_DATA:
+        event_email = models.EventEmail(
             event_id=item.get('event_id'),
             email_subject=item.get('email_subject'),
             email_content=item.get('email_content'),
             timestamp=item.get('timestamp')
         )
-        config.db.session.add(data)
+        event_email.recipients.append(recipient)
+        config.db.session.add(event_email)
 
     config.db.session.commit()
+
 
 @click.command('init-db')
 @with_appcontext
