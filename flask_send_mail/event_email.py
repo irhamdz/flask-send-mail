@@ -1,7 +1,8 @@
 from flask_restful import Resource
 from flask import request, abort
 
-from . import models, config, helper
+from flask_send_mail import models, helper
+from flask_send_mail.models import db
 
 
 class EventEmailListResource(Resource):
@@ -41,8 +42,8 @@ class EventEmailCreateResource(Resource):
                 if recipient is not None:
                     new_event_email.recipients.append(recipient)
 
-        config.db.session.add(new_event_email)
-        config.db.session.commit()
+        db.session.add(new_event_email)
+        db.session.commit()
         event_email_schema = models.EventEmailSchema()
         return event_email_schema.dump(new_event_email), 201
 
@@ -87,7 +88,7 @@ class EventEmailResource(Resource):
                 if recipient is not None:
                     event_email.recipients.append(recipient)
 
-        config.db.session.commit()
+        db.session.commit()
         return event_email_schema.dump(event_email)
 
     def delete(self, id):
@@ -99,5 +100,5 @@ class EventEmailResource(Resource):
 
         # soft delete
         event_email.is_active = False
-        config.db.session.commit()
+        db.session.commit()
         return '', 204

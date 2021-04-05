@@ -1,7 +1,7 @@
 from flask_restful import Resource
 from flask import request
 
-from . import models, config
+from flask_send_mail import models, config
 
 
 class RecipientListResource(Resource):
