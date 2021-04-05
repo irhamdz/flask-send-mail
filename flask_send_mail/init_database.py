@@ -4,7 +4,7 @@ from datetime import datetime
 import click
 from flask.cli import with_appcontext
 
-from . import models, config
+from flask_send_mail.models import db, Recipient, EventEmail
 
 
 def init_db():
@@ -28,22 +28,22 @@ def init_db():
         os.remove('event.db')
 
     # create db
-    config.db.create_all()
+    db.create_all()
 
     # Populate db
-    recipient = models.Recipient(name="Irham Dzuhri", email="irhamdz@gmail.com")
-    config.db.session.add(recipient)
+    recipient = Recipient(name="Irham Dzuhri", email="irhamdz@gmail.com")
+    db.session.add(recipient)
     for item in EVENT_EMAIL_DATA:
-        event_email = models.EventEmail(
+        event_email = EventEmail(
             event_id=item.get('event_id'),
             email_subject=item.get('email_subject'),
             email_content=item.get('email_content'),
             timestamp=item.get('timestamp')
         )
         event_email.recipients.append(recipient)
-        config.db.session.add(event_email)
+        db.session.add(event_email)
 
-    config.db.session.commit()
+    db.session.commit()
 
 
 @click.command('init-db')
