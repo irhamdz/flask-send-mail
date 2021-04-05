@@ -1,6 +1,7 @@
 from flask_restful import Resource
+from flask import request
 
-from . import models
+from . import models, config
 
 
 class RecipientListResource(Resource):
@@ -20,51 +21,32 @@ class RecipientResource(Resource):
         func to response to a request GET /api/recipients/{id}
         :return: detail of event email given id, 200 OK, or 404 NOT FOUND
         """
-        event_email = models.EventEmail.query.filter_by(id=id, is_active=True).one_or_none()
-        description = f"Event email with id {id} not found or not active"
-        if event_email is None:
-            return abort(404, description=description)
-
-        event_email_schema = models.EventEmailSchema()
-        return event_email_schema.dump(event_email)
+        recipient = models.EventEmail.query.get_or_404(id, description=f"Recipient with id {id} not found")
+        recipient_schema = models.RecipientSchema()
+        return recipient_schema.dump(recipient)
 
     def patch(self, id):
         """
-        func to response to a request PATCH /api/event_emails/{id}
+        func to response to a request PATCH /api/recipients/{id}
         :return: detail of event email given id, 200 OK, or 404 NOT FOUND
         """
-        event_email = models.EventEmail.query.get_or_404(id, description=f"Event email with id {id} not found")
-        event_email_schema = models.EventEmailSchema()
+        recipient = models.Recipient.query.get_or_404(id, description=f"Recipient with id {id} not found")
+        recipient_schema = models.RecipientSchema()
 
-        if 'event_id' in request.json:
-            event_email.event_id = request.json['event_id']
-        if 'email_subject' in request.json:
-            event_email.email_subject = request.json['email_subject']
-        if 'email_content' in request.json:
-            event_email.email_content = request.json['email_content']
-        if 'timestamp' in request.json:
-            event_email.timestamp = helper.construct_timestamp(request.json['timestamp'])
-
-        if 'recipients' in request.json:
-            # clear all recipient first
-            event_email.recipients = []
-            for id in request.json['recipients']:
-                recipient = models.Recipient.query.filter_by(id=id).one_or_none()
-
-                if recipient is not None:
-                    event_email.recipients.append(recipient)
+        if 'name' in request.json:
+            recipient.name = request.json['name']
+        if 'email' in request.json:
+            recipient.email = request.json['email']
 
         config.db.session.commit()
-        return event_email_schema.dump(event_email)
+        return recipient_schema.dump(recipient)
 
     def delete(self, id):
         """
-        func to response to a request DELETE /api/event_emails/{id}
+        func to response to a request DELETE /api/recipients/{id}
         :return: 204 No Content
         """
-        event_email = models.EventEmail.query.get_or_404(id)
-
-        # soft delete
-        event_email.is_active = False
+        recipient = models.Recipient.query.get_or_404(id)
+        config.db.session.delete(recipient)
         config.db.session.commit()
         return '', 204
