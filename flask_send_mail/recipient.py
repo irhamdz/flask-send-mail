@@ -1,7 +1,7 @@
 from flask_restful import Resource
 from flask import request
 
-from flask_send_mail import models, config
+from flask_send_mail.models import Recipient, RecipientSchema, db, EventEmail
 
 
 class RecipientListResource(Resource):
@@ -10,9 +10,25 @@ class RecipientListResource(Resource):
         func to response to a request GET /api/recipients with the complete list of recipients
         :return: sorted list of recipients, 200 OK
         """
-        recipient = models.Recipient.query.all()
-        recipient_schema = models.RecipientSchema(many=True)
+        recipient = Recipient.query.all()
+        recipient_schema = RecipientSchema(many=True)
         return recipient_schema.dump(recipient)
+
+    def post(self):
+        """
+        func to response a request POST /api/recipients
+        :return: detail recipient, 201 created
+        """
+
+        new_recipient = Recipient(
+            name=request.json['name'],
+            email=request.json['email'],
+        )
+
+        db.session.add(new_recipient)
+        db.session.commit()
+        recipient_schema = RecipientSchema()
+        return recipient_schema.dump(new_recipient), 201
 
 
 class RecipientResource(Resource):
@@ -21,8 +37,8 @@ class RecipientResource(Resource):
         func to response to a request GET /api/recipients/{id}
         :return: detail of event email given id, 200 OK, or 404 NOT FOUND
         """
-        recipient = models.EventEmail.query.get_or_404(id, description=f"Recipient with id {id} not found")
-        recipient_schema = models.RecipientSchema()
+        recipient = EventEmail.query.get_or_404(id, description=f"Recipient with id {id} not found")
+        recipient_schema = RecipientSchema()
         return recipient_schema.dump(recipient)
 
     def patch(self, id):
@@ -30,15 +46,15 @@ class RecipientResource(Resource):
         func to response to a request PATCH /api/recipients/{id}
         :return: detail of event email given id, 200 OK, or 404 NOT FOUND
         """
-        recipient = models.Recipient.query.get_or_404(id, description=f"Recipient with id {id} not found")
-        recipient_schema = models.RecipientSchema()
+        recipient = Recipient.query.get_or_404(id, description=f"Recipient with id {id} not found")
+        recipient_schema = RecipientSchema()
 
         if 'name' in request.json:
             recipient.name = request.json['name']
         if 'email' in request.json:
             recipient.email = request.json['email']
 
-        config.db.session.commit()
+        db.session.commit()
         return recipient_schema.dump(recipient)
 
     def delete(self, id):
@@ -46,7 +62,7 @@ class RecipientResource(Resource):
         func to response to a request DELETE /api/recipients/{id}
         :return: 204 No Content
         """
-        recipient = models.Recipient.query.get_or_404(id)
-        config.db.session.delete(recipient)
-        config.db.session.commit()
+        recipient = Recipient.query.get_or_404(id)
+        db.session.delete(recipient)
+        db.session.commit()
         return '', 204
