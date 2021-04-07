@@ -74,4 +74,4 @@ celery -A flask_send_mail.tasks.celery worker -l info -B
 
 ## API SPEC
 
-please go to this [link](flask-send_mail/API_SPEC.md) to see the api spec for available endpoints.
+please go to this [link](API_SPEC.md) to see the api spec for available endpoints.
