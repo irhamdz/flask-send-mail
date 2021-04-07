@@ -37,7 +37,7 @@ class RecipientResource(Resource):
         func to response to a request GET /api/recipients/{id}
         :return: detail of event email given id, 200 OK, or 404 NOT FOUND
         """
-        recipient = EventEmail.query.get_or_404(id, description=f"Recipient with id {id} not found")
+        recipient = Recipient.query.get_or_404(id, description=f"Recipient with id {id} not found")
         recipient_schema = RecipientSchema()
         return recipient_schema.dump(recipient)
 
