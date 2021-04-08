@@ -35,6 +35,24 @@ def create_app():
 
         return render_template('home.html')
 
+    @app.route('/recipient')
+    def recipient():
+        """
+        This function just responds to the browser URL
+        localhost:5000/recipient
+        :return: the rendered template "recipient.html"
+        """
+        return render_template("recipient.html")
+
+    @app.route('/event-email')
+    def event_email():
+        """
+        This function just responds to the browser URL
+        localhost:5000/event-email
+        :return: the rendered template "event-email.html"
+        """
+        return render_template("event-email.html")
+
     # add command
     app.cli.add_command(init_db_command)
 

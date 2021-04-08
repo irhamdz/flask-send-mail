@@ -74,7 +74,7 @@ Request :
   "event_id": 45,
   "email_subject": "Test New Subject",
   "email_content": "Test New Content Email",
-  "timestamp": "2021-04-10 23:10:10"
+  "timestamp": "2021-04-10T23:10:10"
 }
 ```
 
